@@ -14,7 +14,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        fontFamily: 'Lato',
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,secondary: Colors.deepOrange),
       ),
       home: ProductsOverviewPage(),
       debugShowCheckedModeBanner: false,
