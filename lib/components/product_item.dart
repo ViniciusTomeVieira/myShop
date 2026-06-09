@@ -6,23 +6,26 @@ import 'package:shop/utils/app_routes.dart';
 class ProductItem extends StatelessWidget {
   const ProductItem({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context);
+    final product = Provider.of<Product>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: IconButton(
-            onPressed: () {
-              product.toggleFavorite();
-            },
-            icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
-            color: Theme.of(context).colorScheme.secondary,
+          leading: Consumer<Product>(
+            builder: (ctx, product, child) => IconButton(
+              onPressed: () {
+                product.toggleFavorite();
+              },
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              ),
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
-          title: Text(product.title, textAlign: TextAlign.center),
+          title: Text(product.name, textAlign: TextAlign.center),
           trailing: IconButton(
             onPressed: () {},
             icon: Icon(Icons.shopping_cart),
@@ -31,10 +34,9 @@ class ProductItem extends StatelessWidget {
         child: GestureDetector(
           child: Image.network(product.imageUrl, fit: BoxFit.cover),
           onTap: () {
-            Navigator.of(context).pushNamed(
-              AppRoutes.PRODUCT_DETAIL,
-              arguments: product,
-            );
+            Navigator.of(
+              context,
+            ).pushNamed(AppRoutes.PRODUCT_DETAIL, arguments: product);
           },
         ),
       ),

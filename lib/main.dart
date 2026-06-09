@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/models/cart.dart';
 import 'package:shop/models/product_list.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/pages/products_overview_page.dart';
@@ -15,29 +16,32 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProductList(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ProductList(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => Cart(),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           fontFamily: 'Lato',
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.deepPurple,
-            foregroundColor: Colors.white
+            foregroundColor: Colors.white,
           ),
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepPurple,secondary: Colors.deepOrange),
+            seedColor: Colors.deepPurple,
+            secondary: Colors.deepOrange,
+          ),
         ),
         home: ProductsOverviewPage(),
         debugShowCheckedModeBanner: false,
-        routes: {
-          AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage(),
-        },
+        routes: {AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()},
       ),
     );
   }
 }
-
-
-
-         
