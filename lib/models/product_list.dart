@@ -7,42 +7,46 @@ import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
-  final _baseUrl = 'https://shop-cod3r-6a485-default-rtdb.firebaseio.com';
+  final url = 'https://shop-cod3r-6a485-default-rtdb.firebaseio.com/products';
   final List<Product> _items = dummyProducts;
 
   List<Product> get items => [..._items];
   List<Product> get favoriteItems =>
       _items.where((prod) => prod.isFavorite).toList();
 
-  void addProduct(Product product) {
-    http
-        .post(
-          Uri.parse('$_baseUrl/products.json'),
-          body: jsonEncode({
-            "name": product.name,
-            "description": product.description,
-            "price": product.price,
-            "imageUrl": product.imageUrl,
-            "isFavorite": product.isFavorite,
-          }),
-        )
-        .then((response) {
-          final id = jsonDecode(response.body)['name'];
-          _items.add(
-            Product(
-              id: id,
-              name: product.name,
-              description: product.description,
-              price: product.price,
-              imageUrl: product.imageUrl,
-              isFavorite: product.isFavorite,
-            ),
-          );
-          notifyListeners();
-        });
+  Future<void> loadProducts() async {
+    final response = await http.get(Uri.parse(url));
+    print(jsonDecode(response.body));
   }
 
-  void saveProduct(Map<String, Object> data) {
+  Future<void> addProduct(Product product) async {
+    final response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode({
+        "name": product.name,
+        "description": product.description,
+        "price": product.price,
+        "imageUrl": product.imageUrl,
+        "isFavorite": product.isFavorite,
+      }),
+    );
+
+    final id = jsonDecode(response.body)['name'];
+    _items.add(
+      Product(
+        id: id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        isFavorite: product.isFavorite,
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  Future<void> saveProduct(Map<String, Object> data) {
     bool hasId = data['id'] != null;
 
     final product = Product(
@@ -54,19 +58,21 @@ class ProductList with ChangeNotifier {
     );
 
     if (hasId) {
-      updateProduct(product);
+      return updateProduct(product);
     } else {
-      addProduct(product);
+      return addProduct(product);
     }
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) {
     int index = _items.indexWhere((p) => p.id == product.id);
 
     if (index >= 0) {
       _items[index] = product;
       notifyListeners();
     }
+
+    return Future.value();
   }
 
   void removeProduct(Product product) {

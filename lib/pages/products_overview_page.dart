@@ -6,6 +6,7 @@ import 'package:shop/components/app_drawer.dart';
 import 'package:shop/components/badge_circle.dart';
 import 'package:shop/components/product_grid.dart';
 import 'package:shop/models/cart.dart';
+import 'package:shop/models/product_list.dart';
 import 'package:shop/utils/app_routes.dart';
 
 enum FilterOptions {
@@ -21,8 +22,12 @@ class ProductsOverviewPage extends StatefulWidget {
 }
 
 class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
-
   bool _showFavoriteOnly = false;
+
+  void initState() {
+    super.initState();
+    Provider.of<ProductList>(context, listen: false).loadProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +40,16 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
             itemBuilder: (_) => [
               PopupMenuItem(
                 value: FilterOptions.Favorite,
-                child: Text('Somente favoritos'),               
+                child: Text('Somente favoritos'),
               ),
               PopupMenuItem(
                 value: FilterOptions.All,
-                child: Text('Todos'),               
+                child: Text('Todos'),
               ),
             ],
             onSelected: (FilterOptions selectedValue) {
               setState(() {
-                if(selectedValue == FilterOptions.Favorite) {
+                if (selectedValue == FilterOptions.Favorite) {
                   _showFavoriteOnly = true;
                 } else {
                   _showFavoriteOnly = false;
@@ -58,11 +63,11 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
               child: child!,
             ),
             child: IconButton(
-                onPressed: (){
-                  Navigator.of(context).pushNamed(AppRoutes.CART);
-                }, 
-                icon: Icon(Icons.shopping_cart)
-              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRoutes.CART);
+              },
+              icon: Icon(Icons.shopping_cart),
+            ),
           ),
         ],
       ),
