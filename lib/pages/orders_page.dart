@@ -7,18 +7,55 @@ import 'package:shop/models/order_list.dart';
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
 
+  // bool _isLoading = true;
+  Future<void> _refreshOrders(BuildContext context) {
+    return Provider.of<OrderList>(context, listen: false).loadOrders();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final OrderList orders = Provider.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Meus Pedidos'),
       ),
       drawer: AppDrawer(),
-      body: ListView.builder(
-        itemCount: orders.itemsCount,
-        itemBuilder: (context, index) => OrderWidget(order: orders.items[index]),
+      body: FutureBuilder(
+        future: Provider.of<OrderList>(context, listen: false).loadOrders(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.error != null) {
+            return Center(
+              child: Text('Ocorreu um erro!'),
+            );
+          } else {
+            return RefreshIndicator(
+              onRefresh: () => _refreshOrders(context),
+              child: Consumer<OrderList>(
+                builder: (context, orders, child) => ListView.builder(
+                  itemCount: orders.itemsCount,
+                  itemBuilder: (context, index) =>
+                      OrderWidget(order: orders.items[index]),
+                ),
+              ),
+            );
+          }
+        },
       ),
+      // body: _isLoading
+      //     ? Center(
+      //         child: CircularProgressIndicator(),
+      //       )
+      //     : RefreshIndicator(
+      //         onRefresh: () => _refreshOrders(context),
+      //         child: ListView.builder(
+      //           itemCount: orders.itemsCount,
+      //           itemBuilder: (context, index) =>
+      //               OrderWidget(order: orders.items[index]),
+      //         ),
+      //       ),
     );
   }
 }
